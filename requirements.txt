@@ -17,7 +17,7 @@ importlib-metadata==4.8.1
 keras-nightly==2.5.0.dev2021032900
 Keras-Preprocessing==1.1.2
 Markdown==3.3.4
-networkx @ file:///tmp/build/80754af9/networkx_1633639043937/work
+networkx==2.6.3
 numpy==1.19.5
 oauthlib==3.1.1
 opt-einsum==3.3.0
