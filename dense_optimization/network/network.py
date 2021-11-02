@@ -34,7 +34,7 @@ class Network(object):
         """
         raise NotImplementedError()  # TODO Remove a layer and connect the previous to the next
 
-    def convert(self, model: tf.keras.Model):
+    def convert(self, model: tf.keras.Model) -> nx.DiGraph:
         """
         Convert a Keras model to a networkx graph.
         Model should be Sequential only now.
@@ -42,3 +42,10 @@ class Network(object):
         :return:
         """
         raise NotImplementedError()  # TODO To convert to nx.DiGraph()
+
+    def build_model(self) -> tf.keras.Model:  # TODO Not for now!
+        """
+        Returns a new Keras Model
+        :return:
+        """
+        raise NotImplementedError()  # TODO build a new model from the current nx.DiGraph (self.graph)

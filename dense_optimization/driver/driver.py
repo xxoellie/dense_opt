@@ -21,4 +21,7 @@ class Driver(object):
         :param metric_fn: the metric to measure performance of the model
         :return: Results of the evaluation from Model
         """
+        # return {
+        #     metric_fn.name: VALUE
+        # }
         raise NotImplementedError()

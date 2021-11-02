@@ -2,7 +2,7 @@ import tensorflow as tf
 
 from dense_optimization.driver.driver import Driver
 from dense_optimization.network.network import Network
-from dense_optimization.transforms import fold_bn
+from dense_optimization.transforms.fold_bn import FoldBatchNormTransform
 from typing import Callable
 
 
@@ -25,7 +25,13 @@ class Runner(object):
         print(results_before_folding)
         self._network.convert(model=model)
 
-        results_after_folding = self._driver.evaluate(model=model,
+        # TODO Fold BatchNorm
+        bn_transform = FoldBatchNormTransform()
+        bn_transform(network=self._network)
+
+        new_model = self._network.build_model()
+
+        results_after_folding = self._driver.evaluate(model=new_model,
                                                       dataset=validation_dataset,
                                                       steps=steps_for_evaluation,
                                                       metric_fn=metric_fn)

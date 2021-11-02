@@ -5,7 +5,7 @@ import abc
 from dense_optimization.network.network import Network
 
 
-class Transform(abc.ABC):
+class Transform(abc.ABC):  # Not to touch
 
     def __init__(self):
         pass
@@ -18,12 +18,18 @@ class Transform(abc.ABC):
         pass
 
 
-class FoldBatchNormTransform(Transform):
+
+
+
+class FoldBatchNormTransform(Transform):  # TODO For Later. Optional if you finish early.
 
     def call(self, network: Network):
         # TODO 1. Find all BatchNorm layers.
         # TODO 2. Fold them into the previous 'Conv2D' or 'Dense' layer.
         raise NotImplementedError()
+
+
+
 
 
 def fold_batch_norm_dense(dense: tf.keras.layers.Dense, bn: tf.keras.layers.BatchNormalization):
