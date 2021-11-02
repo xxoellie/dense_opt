@@ -18,9 +18,6 @@ class Transform(abc.ABC):  # Not to touch
         pass
 
 
-
-
-
 class FoldBatchNormTransform(Transform):  # TODO For Later. Optional if you finish early.
 
     def call(self, network: Network):
@@ -29,36 +26,40 @@ class FoldBatchNormTransform(Transform):  # TODO For Later. Optional if you fini
         raise NotImplementedError()
 
 
+def fold_dense_batch_norm(dense: tf.keras.layers.Dense, bn: tf.keras.layers.BatchNormalization):
+    gamma = tf.constant(bn.gamma)
+    beta = tf.constant(bn.beta)
+    mu = tf.constant(bn.moving_mean)
+    var = tf.constant(bn.moving_variance)
+
+    W = tf.constant(dense.kernel)
+    W = tf.reshape(W, (1, 1, W.shape[0], W.shape[1]))
+    bias = tf.constant(dense.bias)
+
+    denom = tf.sqrt(var + bn.epsilon)
+    gamma_denom = (gamma / denom)
+
+    new_W = W * gamma_denom
+    new_bias = (bias - mu) * gamma_denom + beta
+
+    dense.kernel.assign(tf.squeeze(new_W))
+    dense.bias.assign(new_bias)
 
 
+def fold_conv2d_batch_norm(conv: tf.keras.layers.Conv2D, bn: tf.keras.layers.BatchNormalization):
+    gamma = tf.constant(bn.gamma)
+    beta = tf.constant(bn.beta)
+    mu = tf.constant(bn.moving_mean)
+    var = tf.constant(bn.moving_variance)
 
-def fold_batch_norm_dense(dense: tf.keras.layers.Dense, bn: tf.keras.layers.BatchNormalization):
-    pass  # TODO to Implement
+    W = tf.constant(conv.kernel)
+    bias = tf.constant(conv.bias)
 
+    denom = tf.sqrt(var + bn.epsilon)
+    gamma_denom = (gamma / denom)
 
+    new_W = W * gamma_denom
+    new_bias = (bias-mu)*gamma_denom + beta
 
-def fold_batch_norm_conv2d(conv: tf.keras.layers.Conv2D, bn: tf.keras.layers.BatchNormalization, epsilon=1e-6):
-    gamma = bn.gamma.numpy()
-    gamma = gamma.reshape((1, 1, 1, gamma.shape[0]))
-    beta = bn.beta.numpy()
-    mean = bn.moving_mean.numpy()
-    variance = bn.moving_variance.numpy()
-    variance = variance.reshape((1, 1, 1, variance.shape[0]))
-
-    denom = np.sqrt(variance + epsilon)
-
-    W = conv.kernel.numpy()
-    bias = conv.bias.numpy()
-
-    # denom = torch.sqrt(var + eps)
-    b = beta - gamma * mean / denom
-    A = gamma / denom
-    bias *= A.reshape((bias.shape[0], ))
-    # A = A.expand_as(W.transpose(0, -1)).transpose(0, -1)
-
-    W *= A
-    bias += b.squeeze()
-
-    conv.kernel.assign(W)
-
-    conv.bias.assign(bias)
+    conv.kernel.assign(new_W)
+    conv.bias.assign(new_bias)
