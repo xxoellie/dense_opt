@@ -1,6 +1,6 @@
 import networkx as nx
 import tensorflow as tf
-
+from tensorflow.keras.layers import Layer
 
 class Network(object):
     
@@ -8,7 +8,7 @@ class Network(object):
         self._graph = nx.DiGraph()
         self._model = None
 
-    def insert_layer_before(self, layer, layer_to_add):
+    def insert_layer_before(self, layer: Layer, layer_to_add: Layer):
         """
         Inserts a new layer *before* layer
         :param layer:
@@ -17,7 +17,7 @@ class Network(object):
         """
         raise NotImplementedError()  # TODO Insert a layer before and connect
 
-    def insert_layer_after(self, layer, layer_to_add):
+    def insert_layer_after(self, layer: Layer, layer_to_add: Layer):
         """
         Inserts a new layer *after* layer
         :param layer:
@@ -26,7 +26,7 @@ class Network(object):
         """
         raise NotImplementedError()  # TODO Insert a new layer after layer and connect those
 
-    def remove_layer(self, layer):
+    def remove_layer(self, layer: Layer):
         """
         Removes the layer from the graph and connects accordingly
         :param layer:
