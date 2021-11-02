@@ -1,5 +1,34 @@
 import tensorflow as tf
 import numpy as np
+import abc
+
+from dense_optimization.network.network import Network
+
+
+class Transform(abc.ABC):
+
+    def __init__(self):
+        pass
+
+    def __call__(self, network: Network):
+        return self.call(network=network)
+
+    @abc.abstractmethod
+    def call(self, network: Network):
+        pass
+
+
+class FoldBatchNormTransform(Transform):
+
+    def call(self, network: Network):
+        # TODO 1. Find all BatchNorm layers.
+        # TODO 2. Fold them into the previous 'Conv2D' or 'Dense' layer.
+        raise NotImplementedError()
+
+
+def fold_batch_norm_dense(dense: tf.keras.layers.Dense, bn: tf.keras.layers.BatchNormalization):
+    pass  # TODO to Implement
+
 
 
 def fold_batch_norm_conv2d(conv: tf.keras.layers.Conv2D, bn: tf.keras.layers.BatchNormalization, epsilon=1e-6):
@@ -10,10 +39,20 @@ def fold_batch_norm_conv2d(conv: tf.keras.layers.Conv2D, bn: tf.keras.layers.Bat
     variance = bn.moving_variance.numpy()
     variance = variance.reshape((1, 1, 1, variance.shape[0]))
 
-    bottom_part = np.sqrt(variance + epsilon)
+    denom = np.sqrt(variance + epsilon)
 
-    new_kernel = (conv.kernel * gamma) / bottom_part
-    conv.kernel.assign(new_kernel)
+    W = conv.kernel.numpy()
+    bias = conv.bias.numpy()
 
-    new_bias = beta + (conv.bias - mean) * gamma / bottom_part
-    conv.bias.assign(tf.reshape(new_bias, (-1, )))
+    # denom = torch.sqrt(var + eps)
+    b = beta - gamma * mean / denom
+    A = gamma / denom
+    bias *= A.reshape((bias.shape[0], ))
+    # A = A.expand_as(W.transpose(0, -1)).transpose(0, -1)
+
+    W *= A
+    bias += b.squeeze()
+
+    conv.kernel.assign(W)
+
+    conv.bias.assign(bias)
