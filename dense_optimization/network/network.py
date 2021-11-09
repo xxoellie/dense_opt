@@ -2,8 +2,11 @@ import networkx as nx
 import tensorflow as tf
 from tensorflow.keras.layers import Layer
 
+
 class Network(object):
-    
+
+    LAYER_KEY_ATTRIBUTE = "layer"
+
     def __init__(self):
         self._graph = nx.DiGraph()
         self._model = None
