@@ -52,7 +52,7 @@ class Runner(object):
         inference_times_after = benchmark_inference(model=model_after, num_steps=num_steps)
         training_times_after = benchmark_training(model=model_after, num_steps=num_steps)
         visualize_model(model=model_after, prefix="model_after", output_dir=output_dir)
-        model_size_before_megabytes = get_model_size(model=model_after)
+        model_size_after_megabytes = get_model_size(model=model_after)
         num_params_after = get_number_of_parameters(model=model_after)
 
         # TODO Plot, graph, however you'd want.
