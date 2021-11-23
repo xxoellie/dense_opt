@@ -1,14 +1,13 @@
 import tensorflow as tf
 
-from typing import Dict, Any
+from typing import Dict, Any, List
 
 
 class Driver(object):
 
     def evaluate(self,
                  model: tf.keras.Model,
-                 dataset: tf.data.Dataset,
-                 steps: int,
+                 dataset: List,
                  metric_fn: tf.keras.metrics.Metric) -> Dict[str, Any]:
         """
 
@@ -22,10 +21,8 @@ class Driver(object):
         #     metric_fn.name: VALUE
         # }
         result_dic = {}
-        for i, train_data in enumerate(dataset):
-            if i == steps:
-                break
-            x, y = train_data
+        for i, data in enumerate(dataset):
+            x, y = data
             pred = model(x, training=False)
             loss = metric_fn(y, pred)
             result_dic[f'{metric_fn.name}'] = loss

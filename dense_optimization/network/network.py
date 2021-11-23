@@ -79,21 +79,6 @@ class Network(object):
         nx.drawing.draw_networkx(graph)
         plt.show()
 
-    def assign_weights(self, model):
-        for layer in model.layers:
-            if isinstance(layer, tf.keras.layers.Dense):
-                layer.bias.assign(tf.random.uniform(layer.bias.shape, dtype=tf.float32))
-                layer.kernel.assign(tf.random.uniform(layer.kernel.shape, dtype=tf.float32))
-            elif isinstance(layer, tf.keras.layers.Conv2D):
-                layer.bias.assign(tf.random.uniform(layer.bias.shape, dtype=tf.float32))
-                layer.kernel.assign(tf.random.uniform(layer.kernel.shape, dtype=tf.float32))
-            elif isinstance(layer, tf.keras.layers.BatchNormalization):
-                layer.gamma.assign(tf.ones(layer.gamma.shape, dtype=tf.float32))
-                layer.beta.assign(tf.zeros(layer.beta.shape, dtype=tf.float32))
-                layer.moving_mean.assign(tf.random.uniform(layer.moving_mean.shape, dtype=tf.float32))
-                layer.moving_variance.assign(tf.random.uniform(layer.moving_variance.shape, dtype=tf.float32))
-        return model
-
     def convert(self, model: tf.keras.Model) -> nx.DiGraph:
         """
         Convert a Keras model to a networkx graph.
