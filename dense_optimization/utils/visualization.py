@@ -2,9 +2,9 @@ import tensorflow as tf
 from pathlib import Path
 
 
-def visualize_model(model: tf.keras.Model, output_dir: str):
+def visualize_model(model: tf.keras.Model, prefix: str, output_dir: str):
     output_dir = Path(output_dir)
-    file_path = output_dir.joinpath(f"{model.name}_vis")
+    file_path = output_dir.joinpath(f"{prefix}_{model.name}_vis")
     dot = tf.keras.utils.model_to_dot(
         model=model,
         show_shapes=True,

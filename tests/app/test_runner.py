@@ -46,7 +46,6 @@ class TestRunner(object):
 
 
     def test_runner(self):
-        print()
         model = self.build_mnist_model()
         metric_fn = tf.keras.metrics.CategoricalAccuracy()
         training_dataset, validation_dataset = self.create_datasets()

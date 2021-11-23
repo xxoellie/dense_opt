@@ -9,6 +9,7 @@ from dense_optimization.transforms.fold_bn import fold_conv2d_batch_norm, fold_d
 LAYER_KEY_ATTRIBUTE = "layer"
 LAYER_OUT_KEY_ATTRIBUTE = "output"
 
+
 class TestNetwork(object):
 
     @staticmethod
