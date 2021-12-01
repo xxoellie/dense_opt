@@ -98,4 +98,3 @@ def fold_conv2d_batch_norm(conv: tf.keras.layers.Conv2D, bn: tf.keras.layers.Bat
     conv.kernel.assign(new_W)
     conv.bias.assign(new_bias)
     return conv
-

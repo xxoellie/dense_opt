@@ -5,6 +5,10 @@ import tensorflow as tf
 import os
 import tempfile
 
+import matplotlib.pyplot as plt
+from matplotlib import pyplot
+from termcolor import colored
+
 from dense_optimization.driver.driver import Driver
 from dense_optimization.network.network import Network
 from dense_optimization.transforms.fold_bn import FoldBatchNormTransform
@@ -39,7 +43,7 @@ class Runner(object):
         model_after = tf.keras.models.load_model(self._model_after_path)
         warmup_model(model=model_after)
 
-        output_dir = self._temp_dir  # TODO Choose Output Dir
+        output_dir = r"C:\Users\xxoel\PycharmProjects\dense_optimization\tests\img"
         assert output_dir is not None
         num_steps = 5
 
@@ -54,6 +58,41 @@ class Runner(object):
         visualize_model(model=model_after, prefix="model_after", output_dir=output_dir)
         model_size_after_megabytes = get_model_size(model=model_after)
         num_params_after = get_number_of_parameters(model=model_after)
+
+
+        print(colored('average_inference_times', 'red'))
+        print(f'before : {sum(inference_times_before) / len(inference_times_before)} / after : {sum(inference_times_after) / len(inference_times_after)}')
+        print(colored('average_training_times', 'red'))
+        print(f'before : {sum(training_times_before) / len(training_times_before)} / after : {sum(training_times_after) / len(training_times_after)}')
+        print(colored('model_size', 'red'))
+        print(f'before : {model_size_before_megabytes}MB / after : {model_size_after_megabytes}MB')
+        print(colored('num_params', 'red'))
+        print(f'before : {num_params_before} / after : {num_params_after}')
+
+
+        label = ['avg_inference_time', 'avg_training_time', 'model_size', 'num_params']
+        before_list = [round((sum(inference_times_before) / len(inference_times_before)), 5),
+                       round((sum(training_times_before) / len(training_times_before)), 5),
+                       model_size_before_megabytes,
+                       num_params_before]
+        after_list = [round((sum(inference_times_after) / len(inference_times_after)), 5),
+                      round((sum(training_times_after) / len(training_times_after)), 5),
+                      model_size_after_megabytes,
+                      num_params_after]
+
+
+        for i in range(len(label)):
+            x = 0
+            pyplot.bar(x, before_list[i], label = 'before', width=0.05, color = 'b', alpha = 0.5)
+            pyplot.bar(x+0.1 , after_list[i], label = 'after', width=0.05, color = 'r', alpha = 0.5)
+            plt.title(label[i])
+            plt.legend()
+            plt.xticks([])
+            plt.text(0, before_list[i], before_list[i], color = 'b', horizontalalignment = 'center', fontsize = 10)
+            plt.text(0.1, after_list[i], after_list[i], color = 'b', horizontalalignment = 'center', fontsize = 10)
+            plt.ylim(bottom = after_list[i] - ((before_list[i] - after_list[i])/2),
+                     top = before_list[i] + ((before_list[i] - after_list[i])/2))
+            plt.show()
 
         # TODO Plot, graph, however you'd want.
 

@@ -1,6 +1,6 @@
 import tensorflow as tf
 from pathlib import Path
-
+from tensorflow import keras
 
 def visualize_model(model: tf.keras.Model, prefix: str, output_dir: str):
     output_dir = Path(output_dir)
@@ -17,7 +17,7 @@ def visualize_model(model: tf.keras.Model, prefix: str, output_dir: str):
         if "label" not in node.get_attributes():
             continue
         for la in {tf.keras.layers.BatchNormalization}:
-            if f": {la.__name__}\n" in node.get_attributes()["label"]:
+            if f": {la.__name__}" in node.get_attributes()["label"] or f"{la.__name__}" in node.get_attributes()["label"]:
                 node.add_style("filled")
                 break
         node.get_attributes()["label"] = f"{i}. {node.get_attributes()['label']}"

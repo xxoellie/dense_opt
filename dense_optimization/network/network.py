@@ -1,10 +1,12 @@
+
+
 import networkx as nx
 import tensorflow as tf
 from matplotlib import pyplot as plt
 import gc
 
-class Network(object):
 
+class Network(object):
     LAYER_KEY_ATTRIBUTE = 'layer'
 
     def __init__(self):
@@ -17,7 +19,7 @@ class Network(object):
     def nodes(self):
         return self._graph.nodes()
 
-    def insert_layer_before(self, layer:tf.keras.layers.Layer, layer_to_add:tf.keras.layers.Layer):
+    def insert_layer_before(self, layer: tf.keras.layers.Layer, layer_to_add: tf.keras.layers.Layer):
         """
         Inserts a new layer *before* layer
         :param layer:
@@ -26,7 +28,7 @@ class Network(object):
         """
 
         pred = list(self._graph.predecessors(layer.name))
-        self._graph.add_node(layer_to_add.name, **{self.LAYER_KEY_ATTRIBUTE:layer_to_add})
+        self._graph.add_node(layer_to_add.name, **{self.LAYER_KEY_ATTRIBUTE: layer_to_add})
         if pred:
             for i in pred:
                 self._graph.remove_edge(i, layer.name)
@@ -38,7 +40,7 @@ class Network(object):
 
         # raise NotImplementedError()  # TODO Insert a layer before and connect
 
-    def insert_layer_after(self, layer:tf.keras.layers.Layer, layer_to_add:tf.keras.layers.Layer):
+    def insert_layer_after(self, layer: tf.keras.layers.Layer, layer_to_add: tf.keras.layers.Layer):
         """
         Inserts a new layer *after* layer
         :param layer:
@@ -47,7 +49,7 @@ class Network(object):
         """
 
         succ = list(self._graph.successors(layer.name))
-        self._graph.add_node(layer_to_add.name, **{self.LAYER_KEY_ATTRIBUTE:layer_to_add})
+        self._graph.add_node(layer_to_add.name, **{self.LAYER_KEY_ATTRIBUTE: layer_to_add})
         if succ:
             for i in succ:
                 self._graph.remove_edge(layer.name, i)
@@ -59,7 +61,7 @@ class Network(object):
 
         # raise NotImplementedError()  # TODO Insert a new layer after layer and connect those
 
-    def remove_layer(self, layer:tf.keras.layers.Layer):
+    def remove_layer(self, layer: tf.keras.layers.Layer):
         """
         Removes the layer from the graph and connects accordingly
         :param layer:
@@ -88,18 +90,19 @@ class Network(object):
         """
         self._model = model
 
-        #if isinstance(model, tf.keras.Sequential):
+        # if isinstance(model, tf.keras.Sequential):
         if model.__class__.__name__ == 'Sequential':
 
             for i in range(len(self._model.layers)):
                 layer = self._model.layers[i]
-                layer_attr = {self.LAYER_KEY_ATTRIBUTE:layer}
+                layer_attr = {self.LAYER_KEY_ATTRIBUTE: layer}
                 self._graph.add_node(layer.name, **layer_attr)
                 # nx.set_node_attributes(self._graph, layer_attr)
             for i in range(len(self._model.layers) - 1):
-                self._graph.add_edge(self._model.layers[i].name, self._model.layers[i+1].name)
+                self._graph.add_edge(self._model.layers[i].name, self._model.layers[i + 1].name)
 
         # raise NotImplementedError()  # TODO To convert to nx.DiGraph()
+
     def save_weights(self):
         for n in self._graph.nodes:
             layer_obj = self._graph.nodes[n][self.LAYER_KEY_ATTRIBUTE]
@@ -117,7 +120,8 @@ class Network(object):
                 continue
             for p in prede:
                 self._graph.nodes[n][self.LAYER_KEY_ATTRIBUTE](self._graph.nodes[p][self.LAYER_KEY_ATTRIBUTE].output)
-            for nw, ow in zip(self._graph.nodes[n][self.LAYER_KEY_ATTRIBUTE].weights, self.weights_dict[n]):  # Assign previous weights
+            for nw, ow in zip(self._graph.nodes[n][self.LAYER_KEY_ATTRIBUTE].weights,
+                              self.weights_dict[n]):  # Assign previous weights
                 nw.assign(ow)
 
     def build_model(self) -> tf.keras.Model:  # TODO Not for now!
@@ -149,4 +153,3 @@ class Network(object):
         return new_model
 
         # raise NotImplementedError()  # TODO build a new model from the current nx.DiGraph (self.graph)
-
